@@ -56,26 +56,35 @@ def main():
     index = construct_frets(sketch, frets_short, index)
     index = construct_frets(sketch, frets_long, index)
 
-    # Constrain the center fret to be on the x axis
+    # Calculate explicitly where the center fret should be
+    nut_width = nut_spacing * (string_count - 1)
+    bridge_width = bridge_spacing * (string_count - 1)
     center_fret_index_short = center_fret - 1
     center_fret_index_long = center_fret - 1 + fret_count
-    sketch.addConstraint(Sketcher.Constraint("DistanceY", -1, 1, center_fret_index_short, 2, App.Units.Quantity("0 mm")))
-    sketch.addConstraint(Sketcher.Constraint("DistanceY", -1, 1, center_fret_index_long, 2, App.Units.Quantity("0 mm")))
+    center_fret_width = calc_width_nth_fret(nut_width, bridge_width, scale_short, frets_short[center_fret_index_short])
+    center_fret_line = sketch.addGeometry(
+        Part.LineSegment(App.Vector(-0.5 * center_fret_width, 0, 0), App.Vector(0.5 * center_fret_width, 0, 0)),
+        False)
+    sketch.addConstraint(Sketcher.Constraint('Block', center_fret_line))
+
+    # Fix the center fret
+    sketch.addConstraint(Sketcher.Constraint("Coincident", center_fret_line, 1, center_fret_index_long, 2))
+    sketch.addConstraint(Sketcher.Constraint("Coincident", center_fret_line, 2, center_fret_index_short, 2))
 
     # Constrain the nut spacing
-    nut_width = nut_spacing * (string_count - 1)
     sketch.addConstraint(Sketcher.Constraint(
         "Distance",
         0, 1, fret_count, 1,
         App.Units.Quantity("{} mm".format(nut_width))))
 
     # Constrain last fret spacing
-    bridge_width = bridge_spacing * (string_count - 1)
+    """
     last_fret_width = calc_width_nth_fret(nut_width, bridge_width, scale_short, frets_short[fret_count])
     sketch.addConstraint(Sketcher.Constraint(
         "Distance",
         fret_count - 1, 2, fret_count * 2 - 1, 2,
         App.Units.Quantity("{} mm".format(last_fret_width))))
+    """
 
 
     doc.recompute()
