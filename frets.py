@@ -35,6 +35,12 @@ def construct_frets(sketch, frets, index):
     
     return index + 1
     
+def calc_width_nth_fret(nut_width, bridge_width, scale, fret_distance):
+    # Take weighted average of nut and bridge spacing
+    proportion = fret_distance / scale
+    diff = bridge_width - nut_width
+    return nut_width + (diff * proportion)
+
 def main():
     frets_short = []
     frets_long = []
@@ -63,12 +69,9 @@ def main():
         0, 1, fret_count, 1,
         App.Units.Quantity("{} mm".format(nut_width))))
 
-    # Constrain last fret spacing based on the bridge spacing
+    # Constrain last fret spacing
     bridge_width = bridge_spacing * (string_count - 1)
-    # Take weighted average of nut and bridge spacing
-    proportion = frets_short[center_fret] / scale_short
-    diff = bridge_width - nut_width
-    last_fret_width = nut_width + (diff * proportion)
+    last_fret_width = calc_width_nth_fret(nut_width, bridge_width, scale_short, frets_short[fret_count])
     sketch.addConstraint(Sketcher.Constraint(
         "Distance",
         fret_count - 1, 2, fret_count * 2 - 1, 2,
