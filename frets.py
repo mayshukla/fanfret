@@ -56,6 +56,8 @@ def main():
     sketch.addConstraint(Sketcher.Constraint("DistanceY", -1, 1, center_fret_index_short, 2, App.Units.Quantity("0 mm")))
     sketch.addConstraint(Sketcher.Constraint("DistanceY", -1, 1, center_fret_index_long, 2, App.Units.Quantity("0 mm")))
 
+    # Make center fret centered around y-axis
+    Sketch.addConstraint(Sketcher.Constraint('Symmetric', center_fret_index_short, 2, center_fret_index_long, 2, -2))
 
     # Constrain the nut spacing
     nut_width = nut_spacing * (string_count - 1)
