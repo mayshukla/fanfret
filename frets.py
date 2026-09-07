@@ -72,20 +72,19 @@ def main():
     sketch.addConstraint(Sketcher.Constraint("Coincident", center_fret_line, 2, center_fret_index_short, 2))
 
     # Constrain the nut spacing
+    # Use the horizontal distance to the treble side
+    nut_location = sketch.addGeometry(Part.Point(App.Vector(nut_width / 2, 0, 0)))
+    sketch.addConstraint(Sketcher.Constraint('Block', nut_location))
     sketch.addConstraint(Sketcher.Constraint(
-        "Distance",
-        0, 1, fret_count, 1,
-        App.Units.Quantity("{} mm".format(nut_width))))
+        "DistanceX",
+        nut_location, 1, 0, 1,
+        App.Units.Quantity("0 mm")))
 
-    # Constrain last fret spacing
-    """
-    last_fret_width = calc_width_nth_fret(nut_width, bridge_width, scale_short, frets_short[fret_count])
-    sketch.addConstraint(Sketcher.Constraint(
-        "Distance",
-        fret_count - 1, 2, fret_count * 2 - 1, 2,
-        App.Units.Quantity("{} mm".format(last_fret_width))))
-    """
-
+    # Constrain angle of bass side to match treble side
+    bass_side_angle = sketch.addGeometry(Part.LineSegment(App.Vector(0, 0, 0), App.Vector(0, -1, 0)), False)
+    sketch.addConstraint(Sketcher.Constraint('Symmetric', 0, 1, bass_side_angle, 1, -2))
+    sketch.addConstraint(Sketcher.Constraint('Symmetric', 0, 2, bass_side_angle, 2, -2))
+    sketch.addConstraint(Sketcher.Constraint("Tangent", fret_count, bass_side_angle))
 
     doc.recompute()
     
