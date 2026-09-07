@@ -64,7 +64,7 @@ def main():
     center_fret_width = calc_width_nth_fret(nut_width, bridge_width, scale_short, frets_short[center_fret_index_short])
     center_fret_line = sketch.addGeometry(
         Part.LineSegment(App.Vector(-0.5 * center_fret_width, 0, 0), App.Vector(0.5 * center_fret_width, 0, 0)),
-        False)
+        True)
     sketch.addConstraint(Sketcher.Constraint('Block', center_fret_line))
 
     # Fix the center fret
@@ -81,7 +81,7 @@ def main():
         App.Units.Quantity("0 mm")))
 
     # Constrain angle of bass side to match treble side
-    bass_side_angle = sketch.addGeometry(Part.LineSegment(App.Vector(0, 0, 0), App.Vector(0, -1, 0)), False)
+    bass_side_angle = sketch.addGeometry(Part.LineSegment(App.Vector(0, 0, 0), App.Vector(0, -1, 0)), True)
     sketch.addConstraint(Sketcher.Constraint('Symmetric', 0, 1, bass_side_angle, 1, -2))
     sketch.addConstraint(Sketcher.Constraint('Symmetric', 0, 2, bass_side_angle, 2, -2))
     sketch.addConstraint(Sketcher.Constraint("Tangent", fret_count, bass_side_angle))
